@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.post import Post
 from app.schemas.post import PostCreate, PostUpdate
+import os
 
 # 게시글 생성
 def create_post(db: Session, post: PostCreate, author_id: int):
@@ -35,6 +36,10 @@ def update_post(db: Session, post_id: int, post: PostUpdate, author_id: int):
     if post.body is not None:
         db_post.body = post.body
     if post.image_url is not None:
+        if db_post.image_url:
+            old_path = db_post.image_url.lstrip("/")
+            if os.path.exists(old_path):
+                os.remove(old_path)
         db_post.image_url = post.image_url
     db.commit()
     db.refresh(db_post)
