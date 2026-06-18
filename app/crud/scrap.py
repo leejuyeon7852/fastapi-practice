@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.scrap import Scrap
-from app.schemas.scraps import ScrapResponse
+from app.schemas.scrap import ScrapResponse
 
 def toggle_scrap(db: Session, user_id: int, post_id: int) -> ScrapResponse :
     existing = db.query(Scrap).filter(

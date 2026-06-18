@@ -75,6 +75,15 @@ fastapi-practice/
 - 배포 연습 단계에서는 PostgreSQL로 전환합니다.
 - DB 연결 코드는 `app/database.py`에 모아 두어 나중에 DB를 바꾸기 쉽게 합니다.
 
+## TODO
+
+- 마이페이지 구현 (내 게시글, 댓글, 좋아요, 스크랩 목록, 팔로워/팔로잉 수)
+- `GET /users/me` 응답에 `follower_count`, `following_count` 추가
+- 프로필 이미지 · 닉네임 수정
+- 알림 구현 (좋아요 · 댓글 · 팔로우)
+- 홈 팔로잉 피드 (`GET /posts/feed`)
+- 게시글 / 유저 검색
+
 ## Style Notes
 
 - 초보자가 읽기 쉬운 코드를 우선합니다.

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.crud import scrap as scrap_crud
-from app.schemas.scraps import ScrapResponse
+from app.schemas.scrap import ScrapResponse
 from app.core.deps import get_db, get_current_user
 from app.models.user import User
 
