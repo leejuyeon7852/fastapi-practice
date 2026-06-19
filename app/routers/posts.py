@@ -38,6 +38,11 @@ async def create_post(
 async def get_posts(db: Session = Depends(get_db)):
     return post_crud.get_posts(db)
 
+# 게시글 검색
+@router.get("/search", response_model=list[PostResponse])
+async def search_posts(q: str, db: Session = Depends(get_db)):
+    return post_crud.search_posts(db, q)
+
 # 게시글 상세 조회
 @router.get("/{post_id}", response_model=PostResponse)
 async def get_post(post_id: int, db: Session = Depends(get_db)):

@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.crud import user as user_crud
-from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
+from app.schemas.user import UserCreate, UserLogin, UserResponse, UserProfileResponse, Token
+from app.schemas.post import PostResponse
+from app.schemas.comment import CommentResponse
 from app.core.security import verify_password, create_access_token
 from app.core.deps import get_current_user
 from app.models.user import User
@@ -34,7 +36,32 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
     token = create_access_token(data={"sub": str(db_user.id)})
     return {"access_token": token, "token_type": "bearer"}
 
-# 내 정보 조회
-@router.get("/me", response_model=UserResponse)
+# 내 정보 조회 (마이페이지)
+@router.get("/me", response_model=UserProfileResponse)
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+# 유저 검색
+@router.get("/search", response_model=list[UserResponse])
+async def search_users(q: str, db: Session = Depends(get_db)):
+    return user_crud.search_users(db, q)
+
+# 내 게시글 목록
+@router.get("/me/posts", response_model=list[PostResponse])
+async def get_my_posts(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return user_crud.get_my_posts(db, current_user.id)
+
+# 내 댓글 목록
+@router.get("/me/comments", response_model=list[CommentResponse])
+async def get_my_comments(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return user_crud.get_my_comments(db, current_user.id)
+
+# 내가 좋아요한 게시글 목록
+@router.get("/me/likes", response_model=list[PostResponse])
+async def get_my_likes(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return user_crud.get_my_likes(db, current_user.id)
+
+# 내 스크랩 목록
+@router.get("/me/scraps", response_model=list[PostResponse])
+async def get_my_scraps(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return user_crud.get_my_scraps(db, current_user.id)

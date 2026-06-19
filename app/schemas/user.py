@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 # 회원가입
 class UserCreate(BaseModel):
@@ -25,6 +25,25 @@ class UserResponse(BaseModel):
     nickname: str
     email: str
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# 마이페이지 응답
+class UserProfileResponse(BaseModel):
+    id: int
+    nickname: str
+    follower_count: int = 0
+    following_count: int = 0
+
+    @model_validator(mode="before")
+    @classmethod
+    def fill_counts(cls, obj):
+        if hasattr(obj, "followers"):
+            obj.__dict__["follower_count"] = len(obj.followers)
+        if hasattr(obj, "following"):
+            obj.__dict__["following_count"] = len(obj.following)
+        return obj
 
     class Config:
         from_attributes = True

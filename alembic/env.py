@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.database import Base
-from app.models import post, user, comment
+from app.models import post, user, comment, like, scrap, follow
 
 
 

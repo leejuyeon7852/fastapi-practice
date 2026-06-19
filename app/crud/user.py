@@ -1,5 +1,9 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
+from app.models.post import Post
+from app.models.comment import Comment
+from app.models.like import Like
+from app.models.scrap import Scrap
 from app.schemas.user import UserCreate
 from app.core.security import hash_password
 
@@ -28,6 +32,10 @@ def get_users(db: Session):
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
+# 유저 검색
+def search_users(db: Session, q: str):
+    return db.query(User).filter(User.nickname.ilike(f"%{q}%")).all()
+
 # 삭제
 def delete_user(db: Session, user_id: int):
     db_user = db.query(User).filter(User.id == user_id).first()
@@ -36,3 +44,21 @@ def delete_user(db: Session, user_id: int):
     db.delete(db_user)
     db.commit()
     return db_user
+
+# 내 게시글
+def get_my_posts(db: Session, user_id: int):
+    return db.query(Post).filter(Post.author_id == user_id).all()
+
+# 내 댓글
+def get_my_comments(db: Session, user_id: int):
+    return db.query(Comment).filter(Comment.author_id == user_id).all()
+
+# 내가 좋아요한 게시글
+def get_my_likes(db: Session, user_id: int):
+    likes = db.query(Like).filter(Like.user_id == user_id, Like.post_id != None).all()
+    return [like.post for like in likes]
+
+# 내 스크랩
+def get_my_scraps(db: Session, user_id: int):
+    scraps = db.query(Scrap).filter(Scrap.user_id == user_id).all()
+    return [scrap.post for scrap in scraps]

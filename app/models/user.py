@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime
 
@@ -12,4 +13,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     created_at = Column(DateTime, default=datetime.now)
+
+    followers = relationship("Follow", foreign_keys="Follow.following_id", back_populates=None)
+    following = relationship("Follow", foreign_keys="Follow.follower_id", back_populates=None)
 

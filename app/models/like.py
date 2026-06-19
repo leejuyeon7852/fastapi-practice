@@ -12,6 +12,8 @@ class Like(Base):
     comment_id = Column(Integer, ForeignKey("comments.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.now)
 
+    post = relationship("Post")
+
     __table_args__ = (
         UniqueConstraint("user_id", "post_id", name="uq_user_post_like"),
         UniqueConstraint("user_id", "comment_id", name="uq_user_comment_like"),

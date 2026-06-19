@@ -45,6 +45,12 @@ def update_post(db: Session, post_id: int, post: PostUpdate, author_id: int):
     db.refresh(db_post)
     return db_post
 
+# 게시글 검색
+def search_posts(db: Session, q: str):
+    return db.query(Post).filter(
+        Post.title.ilike(f"%{q}%") | Post.body.ilike(f"%{q}%")
+    ).all()
+
 # 게시글 삭제
 def delete_post(db: Session, post_id: int, author_id: int):
     db_post = db.query(Post).filter(Post.id == post_id).first()
