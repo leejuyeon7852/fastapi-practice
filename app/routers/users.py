@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
@@ -9,6 +9,10 @@ from app.schemas.comment import CommentResponse
 from app.core.security import verify_password, create_access_token
 from app.core.deps import get_current_user
 from app.models.user import User
+import shutil, uuid, os
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter(prefix="/users")
 
@@ -65,3 +69,21 @@ async def get_my_likes(db: Session = Depends(get_db), current_user: User = Depen
 @router.get("/me/scraps", response_model=list[PostResponse])
 async def get_my_scraps(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return user_crud.get_my_scraps(db, current_user.id)
+
+# 프로필 수정
+@router.put("/me", response_model=UserProfileResponse)
+async def update_me(
+    nickname: str | None = Form(None),
+    image: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    image_url = None
+    if image:
+        ext = image.filename.split(".")[-1]
+        filename = f"{uuid.uuid4()}.{ext}"
+        path = os.path.join(UPLOAD_DIR, filename)
+        with open(path, "wb") as f:
+            shutil.copyfileobj(image.file, f)
+        image_url = f"/{UPLOAD_DIR}/{filename}"
+    return user_crud.update_me(db, current_user.id, nickname=nickname, profile_image_url=image_url)

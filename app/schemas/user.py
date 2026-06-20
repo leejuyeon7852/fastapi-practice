@@ -33,6 +33,7 @@ class UserResponse(BaseModel):
 class UserProfileResponse(BaseModel):
     id: int
     nickname: str
+    profile_image_url: str | None = None
     follower_count: int = 0
     following_count: int = 0
 

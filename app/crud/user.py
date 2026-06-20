@@ -32,6 +32,17 @@ def get_users(db: Session):
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 
+# 프로필 수정
+def update_me(db: Session, user_id: int, nickname: str | None, profile_image_url: str | None):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if nickname is not None:
+        db_user.nickname = nickname
+    if profile_image_url is not None:
+        db_user.profile_image_url = profile_image_url
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 # 유저 검색
 def search_users(db: Session, q: str):
     return db.query(User).filter(User.nickname.ilike(f"%{q}%")).all()

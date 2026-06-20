@@ -12,6 +12,7 @@ class User(Base):
     nickname = Column(String)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    profile_image_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
 
     followers = relationship("Follow", foreign_keys="Follow.following_id", back_populates=None)
