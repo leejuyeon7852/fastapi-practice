@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
 from app.crud import user as user_crud
 from app.schemas.user import UserCreate, UserLogin, UserResponse, UserProfileResponse, Token
 from app.schemas.post import PostResponse
 from app.schemas.comment import CommentResponse
 from app.core.security import verify_password, create_access_token
-from app.core.deps import get_current_user
+from app.core.deps import get_db, get_current_user
 from app.models.user import User
 import shutil, uuid, os
 
@@ -15,13 +14,6 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter(prefix="/users")
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # 회원가입
 @router.post("/signup", response_model=UserResponse)
@@ -69,6 +61,19 @@ async def get_my_likes(db: Session = Depends(get_db), current_user: User = Depen
 @router.get("/me/scraps", response_model=list[PostResponse])
 async def get_my_scraps(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return user_crud.get_my_scraps(db, current_user.id)
+
+# 타인 프로필 조회
+@router.get("/{user_id}", response_model=UserProfileResponse)
+async def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = user_crud.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="유저를 찾을 수 없습니다.")
+    return db_user
+
+# 타인 게시글 목록
+@router.get("/{user_id}/posts", response_model=list[PostResponse])
+async def get_user_posts(user_id: int, db: Session = Depends(get_db)):
+    return user_crud.get_my_posts(db, user_id)
 
 # 프로필 수정
 @router.put("/me", response_model=UserProfileResponse)
