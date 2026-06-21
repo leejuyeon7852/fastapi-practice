@@ -32,6 +32,7 @@ class UserResponse(BaseModel):
 # 마이페이지 응답
 class UserProfileResponse(BaseModel):
     id: int
+    username: str
     nickname: str
     profile_image_url: str | None = None
     follower_count: int = 0
