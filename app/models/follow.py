@@ -11,8 +11,8 @@ class Follow(Base):
     following_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.now)
 
-    follower = relationship("User", foreign_keys=[follower_id])
-    following = relationship("User", foreign_keys=[following_id])
+    follower = relationship("User", foreign_keys=[follower_id], overlaps="following")
+    following = relationship("User", foreign_keys=[following_id], overlaps="followers")
 
     __table_args__ = (
         UniqueConstraint("follower_id", "following_id", name="uq_follow"),
